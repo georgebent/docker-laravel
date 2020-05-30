@@ -1,6 +1,40 @@
 version: '3.7'
 services:
+ mysql:
+  container_name: laravel_docker_mysql
+  image: mysql:8.0.13
+  restart: on-failure
+  command: ["--default-authentication-plugin=mysql_native_password"]
+  volumes:
+   - "./.data/mysql:/var/lib/mysql"
+  environment:
+   MYSQL_ROOT_PASSWORD: rootqwerty
+   MYSQL_DATABASE: project
+   MYSQL_USER: db_user
+   MYSQL_PASSWORD: qwerty
+  networks:
+   default:
+    ipv4_address: 172.10.1.30
  php:
+  container_name: laravel_docker_php
+  build:
+   context: ./etc/php
+  networks:
+   default:
+    ipv4_address: 172.10.1.20
  nginx:
- database:
+  container_name: laravel_docker_nginx
+  image: nginx:1.15.8
+  volumes:
+   - "./.data/nginx/logs:/var/log/nginx"
+  networks:
+   default:
+    ipv4_address: 172.10.1.40
+networks:
+ default:
+  driver: bridge
+  ipam:
+   driver: default
+   config:
+    - subnet: 172.10.1.0/16
 
