@@ -19,6 +19,8 @@ services:
   container_name: laravel_docker_php
   build:
    context: ./etc/php
+  volumes:
+   - "./project/:/srv/src/project:cached"
   networks:
    default:
     ipv4_address: 172.10.1.20
@@ -27,6 +29,8 @@ services:
   image: nginx:1.15.8
   volumes:
    - "./.data/nginx/logs:/var/log/nginx"
+   - "./etc/nginx/project.conf:/etc/nginx/conf.d/default.conf"
+   - "./project/:/srv/src/project:cached"
   networks:
    default:
     ipv4_address: 172.10.1.40
