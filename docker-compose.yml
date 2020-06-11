@@ -1,31 +1,32 @@
 version: '3.7'
 services:
  mysql:
-  container_name: laravel_docker_mysql
+  container_name: ${NAME}_mysql
   image: mysql:8.0.13
   restart: on-failure
   command: ["--default-authentication-plugin=mysql_native_password"]
   volumes:
    - "./.data/mysql:/var/lib/mysql"
   environment:
-   MYSQL_ROOT_PASSWORD: rootqwerty
-   MYSQL_DATABASE: project
-   MYSQL_USER: db_user
-   MYSQL_PASSWORD: qwerty
+   MYSQL_DATABASE: ${MYSQL_DATABASE}
+   MYSQL_USER: ${MYSQL_DATABASE_USER}
+   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+   MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
   networks:
    default:
-    ipv4_address: 172.10.1.30
+    ipv4_address: ${MYSQL_IP}
  php:
-  container_name: laravel_docker_php
+  container_name: ${NAME}_php
   build:
    context: ./etc/php
   volumes:
    - "./project/:/srv/src/project:cached"
+   - "./etc/php/config/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini"
   networks:
    default:
-    ipv4_address: 172.10.1.20
+    ipv4_address: ${PHP_IP}
  nginx:
-  container_name: laravel_docker_nginx
+  container_name: ${NAME}_nginx
   image: nginx:1.15.8
   volumes:
    - "./.data/nginx/logs:/var/log/nginx"
@@ -33,12 +34,12 @@ services:
    - "./project/:/srv/src/project:cached"
   networks:
    default:
-    ipv4_address: 172.10.1.40
+    ipv4_address: ${NGINX_IP}
 networks:
  default:
   driver: bridge
   ipam:
    driver: default
    config:
-    - subnet: 172.10.1.0/16
+    - subnet: ${SUBNET}
 
