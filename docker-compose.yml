@@ -35,6 +35,39 @@ services:
   networks:
    default:
     ipv4_address: ${NGINX_IP}
+ elasticsearch:
+  image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+  user: 1000:1000
+  container_name: ${NAME}_elasticsearch
+  restart: unless-stopped
+  ports:
+   - ${ELASTIC_PORT}:9200
+  environment:
+   - discovery.type=single-node
+   - xpack.security.enabled=true
+   - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+   - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+   - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+  volumes:
+   - ./.data/elasticsearch:/usr/share/elasticsearch/data
+  networks:
+   default:
+    ipv4_address: ${ELASTIC_IP}
+ kibana:
+  image: docker.elastic.co/kibana/kibana:7.5.1
+  container_name: ${NAME}_kibana
+  ports:
+   - ${KIBANA_PORT}:5601
+  networks:
+   default:
+    ipv4_address: ${KIBANA_IP}
+  depends_on:
+   - elasticsearch
+  environment:
+   ELASTICSEARCH_HOSTS: http://${ELASTIC_IP}:${ELASTIC_PORT}
+   ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
+   ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+   XPACK_SECURITY_ENABLED: "true"
 networks:
  default:
   driver: bridge
