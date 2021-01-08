@@ -9,7 +9,7 @@
 
 After download run:
 ```sh
-docker-compose up
+docker-compose up --build
 ```
 
 ##### Rename .env.example to .env
@@ -17,7 +17,9 @@ docker-compose up
 ## Configuration
 
 In .env file you must enter:
+- ip of containers
 - database settings
+- elasticsearch settings
 
 ## Troubleshooting & FAQ
 
