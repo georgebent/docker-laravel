@@ -45,3 +45,5 @@ RUN apt-get install -y gnupg2
 # Removing /var/lib/apt/lists worked
 RUN rm -rf /var/lib/apt/lists/ && curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install nodejs -y
+
+RUN echo 'memory_limit = 2G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
