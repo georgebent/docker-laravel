@@ -25,6 +25,8 @@ services:
   networks:
    default:
     ipv4_address: ${PHP_IP}
+  environment:
+   PHP_IDE_CONFIG: serverName=project.loc
  nginx:
   container_name: ${NAME}_nginx
   image: nginx:1.15.8
