@@ -1,4 +1,4 @@
-FROM php:7.3.8-fpm
+FROM php:8.0-fpm
 
 # Set working directory
 WORKDIR /srv/src/project
@@ -25,25 +25,19 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install extensions
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
-RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
-RUN docker-php-ext-install gd
+RUN docker-php-ext-install pdo_mysql zip exif pcntl
 RUN docker-php-ext-install soap
 
-RUN /bin/bash pecl install xdebug-2.7.2 && docker-php-ext-enable xdebug
+RUN /bin/bash pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
 # Add user for laravel application
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
-
-# Add node npm
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install gcc g++ make -y
-# Whatever you did in your PHP Dockerfile
-# this was missing for some reason. Didn't require last time.
-RUN apt-get install -y gnupg2
-# Removing /var/lib/apt/lists worked
-RUN rm -rf /var/lib/apt/lists/ && curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install nodejs -y
+RUN groupadd -g 1001 www
+RUN useradd -u 1001 -ms /bin/bash -g www www
 
 RUN echo 'memory_limit = 2G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
+
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get install -y nodejs
+
+USER www
