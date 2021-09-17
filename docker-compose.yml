@@ -15,6 +15,7 @@ services:
   networks:
    default:
     ipv4_address: ${MYSQL_IP}
+
  php:
   container_name: ${NAME}_php
   build:
@@ -26,9 +27,10 @@ services:
    default:
     ipv4_address: ${PHP_IP}
   environment:
-   PHP_IDE_CONFIG: "serverName=planner.loc"
+   PHP_IDE_CONFIG: "serverName=healthy-food.loc"
   extra_hosts:
    - "host.docker.internal:host-gateway"
+
  nginx:
   container_name: ${NAME}_nginx
   image: nginx:1.15.8
@@ -39,6 +41,35 @@ services:
   networks:
    default:
     ipv4_address: ${NGINX_IP}
+
+ redis:
+  container_name: ${NAME}_redis
+  image: redis:alpine
+  volumes:
+   - "./.data/redis:/data"
+   - "./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+  command: [ "redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}", "--loglevel", "${REDIS_LOGLEVEL:-notice}", "--save", "900", "1", "--save", "300", "10", "--save", "60", "10000" ]
+  networks:
+   default:
+    ipv4_address: ${REDIS_IP}
+  depends_on:
+   - mysql
+
+ pra:
+  container_name: ${NAME}_pra
+  image: erikdubbelboer/phpredisadmin
+  environment:
+   - ADMIN_USER=${REDIS_USER}
+   - ADMIN_PASS=${REDIS_USER_PASSWORD}
+   - REDIS_1_HOST=${NAME}_redis
+   - REDIS_1_PORT=6379
+   - REDIS_1_AUTH=${REDIS_PASSWORD}
+  depends_on:
+   - redis
+  networks:
+   default:
+    ipv4_address: ${PRA_IP}
+
 networks:
  default:
   driver: bridge
