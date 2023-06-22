@@ -15,6 +15,22 @@ services:
   networks:
    default:
     ipv4_address: ${MYSQL_IP}
+
+ postgres:
+  container_name: ${NAME}_postgres
+  image: postgres:15.3-alpine
+  restart: on-failure
+  environment:
+   POSTGRES_USER: ${POSTGRES_USER}
+   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+   POSTGRES_DB: ${POSTGRES_DB}
+  ports:
+   - '5432:5432'
+  volumes:
+   - ./.data/postgresql:/var/lib/postgresql/data
+  networks:
+   default:
+    ipv4_address: ${POSTGRES_IP}
  php:
   container_name: ${NAME}_php
   build:
